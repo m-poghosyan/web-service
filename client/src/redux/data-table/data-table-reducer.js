@@ -1,10 +1,10 @@
-import DataTableTypes from './dataTable-types';
+import DataTableTypes from './data-table-types';
 
 const INITIAL_STATE = {
-  data: null,
+  data: [],
   isLoading: false,
   errorMessage: '',
-  editableChartDataId: null,
+  editableChartData: null,
 };
 
 const dataTableReducer = (state = INITIAL_STATE, { type, payload }) => {
@@ -15,10 +15,32 @@ const dataTableReducer = (state = INITIAL_STATE, { type, payload }) => {
         isLoading: true,
       };
     case DataTableTypes.FETCH_DATA_SUCCESS:
+      function convertData(item, type) {
+        return +item.stocks[type].toString().split('').slice(0, 4).join('');
+      }
+
+      const data = [
+        ...state.data,
+        ...payload.map((item) => {
+          return {
+            ...item,
+            stocks: {
+              ...item.stocks,
+              CAC40: convertData(item, 'CAC40'),
+              NASDAQ: convertData(item, 'NASDAQ'),
+            },
+          };
+        }),
+      ];
+
+      if (data.length > 20) {
+        data.shift();
+      }
+
       return {
         ...state,
         isLoading: false,
-        data: payload,
+        data,
       };
     case DataTableTypes.FETCH_DATA_FAILURE:
       return {
@@ -26,16 +48,11 @@ const dataTableReducer = (state = INITIAL_STATE, { type, payload }) => {
         isLoading: false,
         errorMessage: payload,
       };
-    case DataTableTypes.GET_EDITABLE_CHART_ID:
-      return {
-        ...state,
-        editableChartDataId: payload,
-      };
     case DataTableTypes.CHANGE_CHART_DATA:
       return {
         ...state,
         data: state.data.map((item) => {
-          if (item.id === payload.id) {
+          if (item.index === payload.id) {
             return {
               ...item,
               stocks: { ...item.stocks, [payload.type]: payload.value },
@@ -44,7 +61,11 @@ const dataTableReducer = (state = INITIAL_STATE, { type, payload }) => {
           return item;
         }),
       };
-
+    case DataTableTypes.GET_EDITABLE_CHART_ID:
+      return {
+        ...state,
+        editableChartData: payload,
+      };
     default:
       return state;
   }

@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
-import { fetchData } from '../redux/data-table/data-table-actions';
+import { fetchData } from '../../redux/data-table/data-table-actions';
+import ChartData from '../chart-data/ChartData';
 
 import { connect } from 'react-redux';
 import './table.css';
 
 const Table = (props) => {
-  const [editedValue, setEDitedValue] = useState('');
+  // const [editedValue, setEDitedValue] = useState('');
   const { fetchData, data } = props;
   const getChartData = (data, type) => {
-    return data?.map(
-      (item) => +item.stocks[type].toString().split('').slice(0, 4).join('')
-    );
+    return data?.map((item) => +item.stocks[type]);
   };
   const tableData = {
     labels: [
@@ -86,36 +85,13 @@ const Table = (props) => {
     fetchData();
   }, [fetchData]);
 
-  const handleEdit = (e) => {
-    e.target.contentEditable = true;
-    if (e.target.nodeName === 'TH') {
-      return;
-    }
-    setEDitedValue(e.target.textContent);
-    if (e.key === 'Enter') console.log(e.target.textContent);
-  };
-
   return (
     <div>
       <Line data={tableData} height={90} />
       <table className='table'>
         <thead>
-          <tr onClick={handleEdit}>
-            <th>CAC40</th>
-            {data?.map((item) => (
-              <td key={item.index} onClick={handleEdit}>
-                {+item.stocks.CAC40.toString().split('').slice(0, 4).join('')}
-              </td>
-            ))}
-          </tr>
-          <tr>
-            <th>NASDAQ</th>
-            {data?.map((item) => (
-              <td key={item.index} onClick={handleEdit}>
-                {+item.stocks.NASDAQ.toString().split('').slice(0, 4).join('')}
-              </td>
-            ))}
-          </tr>
+          <ChartData data={data} type='CAC40' />
+          <ChartData data={data} type='NASDAQ' />
         </thead>
       </table>
     </div>
