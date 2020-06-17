@@ -29,14 +29,12 @@ export const editChartById = (payload) => ({
 export const fetchData = () => {
   return async (dispatch) => {
     dispatch(fetchDataStart());
-    let timeout = setTimeout(async function fetchData() {
-      try {
-        const result = await axios.get(`${URL}`);
-        dispatch(fetchDataSuccess(result.data));
-      } catch (error) {
-        dispatch(fetchDataFailure(error.message));
-      }
-      timeout = setTimeout(fetchData, 1000);
-    }, 0);
+
+    try {
+      const result = await axios.get(`${URL}`);
+      dispatch(fetchDataSuccess(result.data));
+    } catch (error) {
+      dispatch(fetchDataFailure(error.message));
+    }
   };
 };

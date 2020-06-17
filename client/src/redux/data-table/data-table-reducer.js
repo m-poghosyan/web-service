@@ -5,6 +5,7 @@ const INITIAL_STATE = {
   isLoading: false,
   errorMessage: '',
   editableChartData: null,
+  isEditable: false,
 };
 
 const dataTableReducer = (state = INITIAL_STATE, { type, payload }) => {
@@ -51,6 +52,7 @@ const dataTableReducer = (state = INITIAL_STATE, { type, payload }) => {
     case DataTableTypes.CHANGE_CHART_DATA:
       return {
         ...state,
+        isEditable: false,
         data: state.data.map((item) => {
           if (item.index === payload.id) {
             return {
@@ -65,6 +67,7 @@ const dataTableReducer = (state = INITIAL_STATE, { type, payload }) => {
       return {
         ...state,
         editableChartData: payload,
+        isEditable: true,
       };
     default:
       return state;

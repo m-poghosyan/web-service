@@ -25,8 +25,8 @@ const ChartData = ({
 
   const confirmEditValue = (e, item, type) => {
     if (e.key === 'Enter') {
-      editChartData({ id: item.index, type, value: editableValue });
       editChartById(null);
+      editChartData({ id: item.index, type, value: editableValue });
     }
   };
 

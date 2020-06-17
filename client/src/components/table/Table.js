@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 import './table.css';
 
 const Table = (props) => {
-  // const [editedValue, setEDitedValue] = useState('');
   const { fetchData, data } = props;
   const getChartData = (data, type) => {
     return data?.map((item) => +item.stocks[type]);
@@ -82,8 +81,14 @@ const Table = (props) => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (props.isEditable) {
+      return;
+    }
+    const interval = setInterval(() => {
+      fetchData();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [fetchData, props.isEditable]);
 
   return (
     <div>
@@ -98,9 +103,12 @@ const Table = (props) => {
   );
 };
 
-const mapStateToProps = ({ dataTableReducer: { data, isLoading } }) => ({
+const mapStateToProps = ({
+  dataTableReducer: { data, isLoading, isEditable },
+}) => ({
   data,
   isLoading,
+  isEditable,
 });
 
 const mapDispatchToProps = (dispatch) => ({
